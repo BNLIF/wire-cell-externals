@@ -24,7 +24,7 @@ This [[https://github.com/BNLIF/wire-cell-externals][wire-cell-externals]] repos
 After the above is done, one command builds the software:
 
 #+BEGIN_EXAMPLE
-  $ waf --prefix=/path/to/install --orch-config=wire-cell-externals/worch.cfg \
+  $ waf --prefix=/path/to/install --orch-config=worch.cfg \
              configure build
 #+END_EXAMPLE
 
