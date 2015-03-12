@@ -1,0 +1,33 @@
+#+TITLE: Build externals for wire-cell packages
+
+The =wire-cell= software in [[https://github.com/BNLIF][BNL IF GitHub]] depends on some software that may not come with your OS, in particular [[http://root.cern.ch][ROOT]].  This package provides a [[https://github.com/brettviren/worch][Worch]] configuration file to build that software.
+
+* Preparation
+
+Of course, you need Worch.  There are various ways to install it and the easiest is via pip in a virtualenv:
+
+#+BEGIN_EXAMPLE
+  $ virtualenv venv
+  $ source venv/bin/activate
+  $ pip install worch
+#+END_EXAMPLE
+
+This [[https://github.com/BNLIF/wire-cell-externals][wire-cell-externals]] repository provides the rest of what is needed:
+
+#+BEGIN_EXAMPLE
+  $ git clone git@github.com:BNLIF/wire-cell-externals.git /path/to/work
+  $ cd /path/to/work
+#+END_EXAMPLE
+
+* Build
+
+After the above is done, one command builds the software:
+
+#+BEGIN_EXAMPLE
+  $ waf --prefix=/path/to/install --orch-config=wire-cell-externals/worch.cfg \
+             configure build
+#+END_EXAMPLE
+
+Depending on how fast your computer, this may take on order an hour.
+
+

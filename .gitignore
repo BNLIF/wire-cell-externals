@@ -1,0 +1,6 @@
+venv
+*~
+install
+tmp
+.waf*
+.lock-waf*
