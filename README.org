@@ -23,7 +23,11 @@ You would repeat those last two lines in any new shells.  You can now test:
 
 #+BEGIN_EXAMPLE
   $ root -b -q
-  $ python -c 'import ROOT'
+  ...
+  | Welcome to ROOT 6.02/05                http://root.cern.ch |
+  ...
+  $ python -c 'import ROOT; print ROOT.gROOT.GetVersion()'
+  6.02/05
 #+END_EXAMPLE
 
 More details and build options are described in the following sections.
@@ -78,8 +82,14 @@ By default, and as part of the build procedure, one will produce a name/version 
 #+BEGIN_EXAMPLE
   $ source /path/to/install/env.sh
   $ module load root
+
   $ root -b -q
-  $ python -c 'import ROOT'
+  ...
+  | Welcome to ROOT 6.02/05                http://root.cern.ch |
+  ...
+
+  $ python -c 'import ROOT; print ROOT.gROOT.GetVersion()'
+  6.02/05
 #+END_EXAMPLE
 
 ** Single-rooted install
@@ -96,7 +106,13 @@ No special environment setup mechanism is provided for this mechanism however on
 
 #+BEGIN_EXAMPLE
   $ source /path/to/single-rooted/bin/thisroot.sh
+
   $ root -b -q
-  $ python -c 'import ROOT'
+  ...
+  | Welcome to ROOT 6.02/05                http://root.cern.ch |
+  ...
+
+  $ python -c 'import ROOT; print ROOT.gROOT.GetVersion()'
+  6.02/05
 #+END_EXAMPLE
 
