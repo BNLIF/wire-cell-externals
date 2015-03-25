@@ -4,3 +4,5 @@ install
 tmp
 .waf*
 .lock-waf*
+buildenv
+README.html

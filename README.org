@@ -2,17 +2,43 @@
 
 The =wire-cell= software in [[https://github.com/BNLIF][BNL IF GitHub]] depends on some software that may not come with your OS, in particular [[http://root.cern.ch][ROOT]].  This package provides a [[https://github.com/brettviren/worch][Worch]] configuration file to build that software.
 
-* Preparation
+* Quickstart
 
-Of course, you need Worch.  There are various ways to install it and the easiest is via pip in a virtualenv:
+If you don't care what this does, just cut and paste:
+#+BEGIN_EXAMPLE
+  $ virtualenv /path/to/buildenv
+  $ source /path/to/buildenv/bin/activate
+  $ pip install worch
+
+  $ git clone git@github.com:BNLIF/wire-cell-externals.git /path/to/work
+  $ cd /path/to/work
+  $ waf --prefix=/path/to/install --orch-config=worch.cfg configure build
+  $ deactivate
+
+  $ source /path/to/install/env.sh
+  $ module load root
+#+END_EXAMPLE
+
+You would repeat those last two lines in any new shells.  You can now test:
 
 #+BEGIN_EXAMPLE
-  $ virtualenv /path/to/venv
-  $ source /path/to/venv/bin/activate
+  $ root -b -q
+  $ python -c 'import ROOT'
+#+END_EXAMPLE
+
+More details and build options are described in the following sections.
+
+* Preparation
+
+It is recommended to install the Worch build system into a Python virtual environment.  This environment will be used only for building these externals.
+
+#+BEGIN_EXAMPLE
+  $ virtualenv /path/to/buildenv
+  $ source /path/to/buildenv/bin/activate
   $ pip install worch
 #+END_EXAMPLE
 
-This [[https://github.com/BNLIF/wire-cell-externals][wire-cell-externals]] repository provides the rest of what is needed:
+This [[https://github.com/BNLIF/wire-cell-externals][wire-cell-externals]] repository provides the rest of what is needed.  Clone it to some place with ample disk space (10s of GB).
 
 #+BEGIN_EXAMPLE
   $ git clone git@github.com:BNLIF/wire-cell-externals.git /path/to/work
@@ -21,49 +47,56 @@ This [[https://github.com/BNLIF/wire-cell-externals][wire-cell-externals]] repos
 
 * Build
 
-After the above is done, one command builds the software:
+After the above is done, this one command builds all the external software:
 
 #+BEGIN_EXAMPLE
-  $ waf --prefix=/path/to/install --orch-config=worch.cfg \
-             configure build
+  (1)  $ waf --prefix=/path/to/install --orch-config=worch.cfg configure
+  (2)  $ waf
+  (3)  $ deactivate
 #+END_EXAMPLE
 
-Depending on how fast your computer, this may take on order an hour.
+This:
+
+1) Configures the build according to the =worch.cfg= file and tells it where to install the final results
+2) Performs the automated build of external packages.  This takes ~1 hour on Intel i7 w/ an SSD.
+3) Exit the virtualenv as it is no longer needed (=/path/to/buildenv= may be removed)
 
 * Install
 
-There are two ways to install the results of the build.
+There are two ways to install the results of the build which differ in the organization of the installation directory layout.  They are:
 
- - versioned install area
- - single-rooted install area
+ - name/version tree :: each package is installed into =/path/to/install/<name>/<version>/{bin,lib,include}=.  This allows for multiple versions of each package to be installed in parallel supporting different versions of an overall collection.  It allows purging of a particular version by simply deleting the directory, although with care not to break other packages which depend on it.  The user environment must be modified (=PATH=, etc) to pick up all run-time aspects of each individual package.
 
-** Versioned install
+ - single-rooted directory :: all packages are installed in the same =/path/to/install/{bin,lib,include}= directory.  User run-time environment still requires adjustment but only for a single aspect.  Only one version of a package may be installed, and removing an installed package is not supported (but is possible).
 
-By default this package can install the build products into a directory tree based on package names and versions like:
+This package supports both paradigms.
 
-#+BEGIN_EXAMPLE
-/path/to/install/<package-name>/<package-version>/{bin,lib,include}
-#+END_EXAMPLE
+** Install to name/version tree
 
-To install following this pattern simply invoke
+By default, and as part of the build procedure, one will produce a name/version tree installation area as designated by the =--prefix= option to =waf=.  The user run-time environment can be set up with the help of [[http://modules.sf.net][Environment Modules]] (EM) which are provided by the build.
 
 #+BEGIN_EXAMPLE
-  $ waf install
+  $ source /path/to/install/env.sh
+  $ module load root
+  $ root -b -q
+  $ python -c 'import ROOT'
 #+END_EXAMPLE
-
-This method currently does not support user-environment setup, however it does allow installation of multiple versions of a single package.
 
 ** Single-rooted install
 
-A simpler organization is to make use of the "tarpack" tar files produced from the build products.  These may be unpacked into a single rooted directory which makes user environment setup easier, but does not allow for multiple versions of the same package to be installed.  It also does not allow for uninstallation.  Convenience can be maximized by using the virtualenv directory as the root.
+In addition to the population of =/path/to/install= as above, the build will produce a "tarpack" binary package file.  These can simply be unpacked into a single-rooted directory.
 
 #+BEGIN_EXAMPLE
   $ cd /path/to/work
-  $ for n in tmp/tarpack/*.tgz; do tar -C /path/to/venv -xf $n; done
+  $ mkdir -p /path/to/single-rooted
+  $ for n in tmp/tarpack/*.tgz; do tar -C /path/to/single-rooted -xf $n; done
 #+END_EXAMPLE
 
-Then, this full installation can be used by repeating the virtualenv setup
+No special environment setup mechanism is provided for this mechanism however one can largely piggy-back on the one ROOT provides:
 
 #+BEGIN_EXAMPLE
-  $ source /path/to/venv/bin/activate
+  $ source /path/to/single-rooted/bin/thisroot.sh
+  $ root -b -q
+  $ python -c 'import ROOT'
 #+END_EXAMPLE
+
