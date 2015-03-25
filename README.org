@@ -7,8 +7,8 @@ The =wire-cell= software in [[https://github.com/BNLIF][BNL IF GitHub]] depends 
 Of course, you need Worch.  There are various ways to install it and the easiest is via pip in a virtualenv:
 
 #+BEGIN_EXAMPLE
-  $ virtualenv venv
-  $ source venv/bin/activate
+  $ virtualenv /path/to/venv
+  $ source /path/to/venv/bin/activate
   $ pip install worch
 #+END_EXAMPLE
 
@@ -30,4 +30,40 @@ After the above is done, one command builds the software:
 
 Depending on how fast your computer, this may take on order an hour.
 
+* Install
 
+There are two ways to install the results of the build.
+
+ - versioned install area
+ - single-rooted install area
+
+** Versioned install
+
+By default this package can install the build products into a directory tree based on package names and versions like:
+
+#+BEGIN_EXAMPLE
+/path/to/install/<package-name>/<package-version>/{bin,lib,include}
+#+END_EXAMPLE
+
+To install following this pattern simply invoke
+
+#+BEGIN_EXAMPLE
+  $ waf install
+#+END_EXAMPLE
+
+This method currently does not support user-environment setup, however it does allow installation of multiple versions of a single package.
+
+** Single-rooted install
+
+A simpler organization is to make use of the "tarpack" tar files produced from the build products.  These may be unpacked into a single rooted directory which makes user environment setup easier, but does not allow for multiple versions of the same package to be installed.  It also does not allow for uninstallation.  Convenience can be maximized by using the virtualenv directory as the root.
+
+#+BEGIN_EXAMPLE
+  $ cd /path/to/work
+  $ for n in tmp/tarpack/*.tgz; do tar -C /path/to/venv -xf $n; done
+#+END_EXAMPLE
+
+Then, this full installation can be used by repeating the virtualenv setup
+
+#+BEGIN_EXAMPLE
+  $ source /path/to/venv/bin/activate
+#+END_EXAMPLE
